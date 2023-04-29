@@ -4,12 +4,14 @@ import './GameBoard.css';
 
 const boardSize = 3;
 
+type PlayerId = string;
+
 type CellData = {
-  top: string | null;
-  bottom: string | null;
-  left: string | null;
-  right: string | null;
-  completedBy?: string | null;
+  top: PlayerId | null;
+  bottom: PlayerId | null;
+  left: PlayerId | null;
+  right: PlayerId | null;
+  completedBy?: PlayerId | null;
 };
 
 type Board = CellData[][];
@@ -33,9 +35,9 @@ const initialBoardData = createBoardData();
 const PLAYERS_ID = {
   PLAYER_1: '1',
   PLAYER_2: '2',
-};
+} as const;
 
-const getPlayersColor = (playerId: string) => {
+const getPlayersColor = (playerId: PlayerId) => {
   switch (playerId) {
     case PLAYERS_ID.PLAYER_1:
       return '#f00';
@@ -90,7 +92,7 @@ function isCellCompleted(cell: CellData) {
   return Object.values(cellBorders).every((value) => value !== null);
 }
 
-function getPlayerName(playerId: string) {
+function getPlayerName(playerId: PlayerId) {
   switch (playerId) {
     case PLAYERS_ID.PLAYER_1:
       return 'Player 1';
@@ -100,7 +102,7 @@ function getPlayerName(playerId: string) {
 }
 
 export const GameBoard = () => {
-  const [activePlayer, setActivePlayer] = useState<string>(PLAYERS_ID.PLAYER_1);
+  const [activePlayer, setActivePlayer] = useState<PlayerId>(PLAYERS_ID.PLAYER_1);
   const [board, setBoard] = useState<Board>(initialBoardData);
 
   const handleClick = (params: { rowIndex: number; colIndex: number; position: Position }) => {
@@ -240,7 +242,7 @@ const Cell = ({ rowIndex, colIndex, showRight, showBottom, onClick, data }: Cell
 
 interface LineProps {
   position: Position;
-  selectedBy?: string;
+  selectedBy?: PlayerId;
   onClick?: () => void;
 }
 
