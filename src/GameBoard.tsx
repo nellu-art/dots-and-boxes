@@ -1,76 +1,91 @@
-import { useState } from "react";
-import "./GameBoard.css";
+import { useState } from 'react';
+import './GameBoard.css';
 
 const boardSize = 3;
 
 type CellData = {
-  top: number;
-  bottom: number;
-  left: number;
-  right: number;
+  top: string | null;
+  bottom: string | null;
+  left: string | null;
+  right: string | null;
+  completedBy?: string | null;
 };
 
 type Board = CellData[][];
 
-const createBoardData = () => {
-  const result = [];
+const createBoardData = (): Board => {
+  const result: Array<CellData[]> = [];
+
   for (let i = 0; i < boardSize; i++) {
     const row = [];
     for (let j = 0; j < boardSize; j++) {
-      row.push({ top: 0, bottom: 0, left: 0, right: 0 });
+      row.push({ top: null, bottom: null, left: null, right: null });
     }
     result.push(row);
   }
+
   return result;
 };
 
 const initialBoardData = createBoardData();
 
+const PLAYERS_ID = {
+  PLAYER_1: '1',
+  PLAYER_2: '2',
+};
+
+const getPlayersColor = (playerId: string) => {
+  switch (playerId) {
+    case PLAYERS_ID.PLAYER_1:
+      return '#f00';
+    case PLAYERS_ID.PLAYER_2:
+      return '#00f';
+  }
+};
+
 export const GameBoard = () => {
-  const [activePlayer, setActivePlayer] = useState<"player1" | "player2">(
-    "player1"
-  );
+  const [activePlayer, setActivePlayer] = useState<string>(PLAYERS_ID.PLAYER_1);
   const [board, setBoard] = useState<Board>(initialBoardData);
 
-  const handleClick = (params: {
-    rowIndex: number;
-    colIndex: number;
-    position: Position;
-  }) => {
+  const handleClick = (params: { rowIndex: number; colIndex: number; position: Position }) => {
+    const newState = [...board];
     const { rowIndex, colIndex, position } = params;
-    const cell = board[rowIndex][colIndex];
-    if (cell[position] !== 0) return;
+    const cell = newState[rowIndex][colIndex];
 
-    setActivePlayer((prevState) =>
-      prevState === "player1" ? "player2" : "player1"
-    );
+    if (cell[position] !== null) return;
 
-    setBoard((prevState) => {
-      const { rowIndex, colIndex, position } = params;
-      const newState = [...prevState];
-      const cell = newState[rowIndex][colIndex];
-      switch (position) {
-        case "top":
-          cell.top = activePlayer === "player1" ? 1 : 2;
-          break;
-        case "bottom":
-          cell.bottom = activePlayer === "player1" ? 1 : 2;
-          break;
-        case "left":
-          cell.left = activePlayer === "player1" ? 1 : 2;
-          break;
-        case "right":
-          cell.right = activePlayer === "player1" ? 1 : 2;
-          break;
-      }
-      return newState;
-    });
+    switch (position) {
+      case 'top':
+        cell.top = activePlayer;
+        break;
+      case 'bottom':
+        cell.bottom = activePlayer;
+        break;
+      case 'left':
+        cell.left = activePlayer;
+        break;
+      case 'right':
+        cell.right = activePlayer;
+        break;
+    }
+
+    const hasAllSelectedLine = Object.values(cell).every((value) => value !== null);
+
+    if (hasAllSelectedLine) {
+      cell.completedBy = activePlayer;
+    } else {
+      setActivePlayer((prevState) =>
+        prevState === PLAYERS_ID.PLAYER_1 ? PLAYERS_ID.PLAYER_2 : PLAYERS_ID.PLAYER_1
+      );
+    }
+
+    setBoard(newState);
   };
 
   return (
     <div>
       {board.map((row, rowIndex) => (
-        <div key={rowIndex} className="row">
+        <div key={rowIndex} className='row'>
           {row.map((col, colIndex) => (
             <Cell
               key={`${rowIndex}-${colIndex}`}
@@ -88,75 +103,48 @@ export const GameBoard = () => {
   );
 };
 
-type Position = "top" | "bottom" | "left" | "right";
+type Position = 'top' | 'bottom' | 'left' | 'right';
 interface CellProps {
   rowIndex: number;
   colIndex: number;
   showRight?: boolean;
   showBottom?: boolean;
-  completed?: boolean;
-  onClick?: (params: {
-    rowIndex: number;
-    colIndex: number;
-    position: Position;
-  }) => void;
+  onClick: (params: { rowIndex: number; colIndex: number; position: Position }) => void;
   data: CellData;
 }
 
-const Cell = ({
-  rowIndex,
-  colIndex,
-  showRight,
-  showBottom,
-  completed,
-  onClick,
-  data,
-}: CellProps) => {
+const Cell = ({ rowIndex, colIndex, showRight, showBottom, onClick, data }: CellProps) => {
   const handleClick = (position: Position) => {
-    onClick?.({ rowIndex, colIndex, position });
+    onClick({ rowIndex, colIndex, position });
   };
 
+  // const getCompletedClassName = () => {
+  //   if (data.completedBy === 1) return 'player1';
+  //   if (data.completedBy === 2) return 'player2';
+  //   return '';
+  // };
+
   return (
-    <div className={`cell ${completed}`}>
-      <Line
-        position="top"
-        selectedBy={
-          data.top === 1 ? "player1" : data.top === 2 ? "player2" : undefined
-        }
-        onClick={() => handleClick("top")}
-      />
+    <div className={`cell`}>
+      <Line position='top' selectedBy={data.top || undefined} onClick={() => handleClick('top')} />
       <Dot />
       <Line
-        position="left"
-        selectedBy={
-          data.left === 1 ? "player1" : data.left === 2 ? "player2" : undefined
-        }
-        onClick={() => handleClick("left")}
+        position='left'
+        selectedBy={data.left || undefined}
+        onClick={() => handleClick('left')}
       />
       {showRight && (
         <Line
-          position="right"
-          selectedBy={
-            data.right === 1
-              ? "player1"
-              : data.right === 2
-              ? "player2"
-              : undefined
-          }
-          onClick={() => handleClick("right")}
+          position='right'
+          selectedBy={data.right || undefined}
+          onClick={() => handleClick('right')}
         />
       )}
       {showBottom && (
         <Line
-          position="bottom"
-          selectedBy={
-            data.bottom === 1
-              ? "player1"
-              : data.bottom === 2
-              ? "player2"
-              : undefined
-          }
-          onClick={() => handleClick("bottom")}
+          position='bottom'
+          selectedBy={data.bottom || undefined}
+          onClick={() => handleClick('bottom')}
         />
       )}
     </div>
@@ -165,14 +153,18 @@ const Cell = ({
 
 interface LineProps {
   position: Position;
-  selectedBy?: "player1" | "player2";
+  selectedBy?: string;
   onClick?: () => void;
 }
 
 const Line = ({ position, selectedBy, onClick }: LineProps) => {
-  return <div className={`line ${position} ${selectedBy}`} onClick={onClick} />;
+  const color = getPlayersColor(selectedBy || '');
+
+  return (
+    <div className={`line ${position}`} style={{ backgroundColor: color }} onClick={onClick} />
+  );
 };
 
 const Dot = () => {
-  return <span className="dot"></span>;
+  return <span className='dot'></span>;
 };
