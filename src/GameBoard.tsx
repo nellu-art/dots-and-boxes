@@ -237,7 +237,11 @@ const Line = ({ position, selectedBy, onClick }: LineProps) => {
   const color = getPlayersColor(selectedBy || '');
 
   return (
-    <div className={`line ${position}`} style={{ backgroundColor: color }} onClick={onClick} />
+    <div
+      className={`line ${position} ${color ? 'completed' : ''}`}
+      style={{ backgroundColor: color }}
+      onClick={onClick}
+    />
   );
 };
 
