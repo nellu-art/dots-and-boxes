@@ -39,8 +39,7 @@
   position: absolute;
 }
 .line:not(.completed):hover {
-  background-color: var(--dot-color);
-  opacity: 0.5;
+  background-color: #bbbbbb55;
   cursor: pointer;
 }
 
