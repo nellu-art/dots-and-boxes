@@ -21,6 +21,16 @@
   height: calc(var(--dot-size) * 6);
 }
 
+.cell.completed::after {
+  content: '';
+  position: absolute;
+  height: calc(var(--dot-size) * 4);
+  width: calc(var(--dot-size) * 4);
+  display: inline-block;
+  top: var(--dot-size);
+  left: var(--dot-size);
+}
+
 .row {
   display: flex;
 }
