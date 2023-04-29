@@ -107,3 +107,9 @@
   top: 0;
   right: calc(-1 * (var(--dot-size) + var(--dot-size) / 2));
 }
+
+.player-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 3rem;
+}

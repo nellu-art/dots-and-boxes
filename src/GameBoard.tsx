@@ -90,6 +90,15 @@ function isCellCompleted(cell: CellData) {
   return Object.values(cellBorders).every((value) => value !== null);
 }
 
+function getPlayerName(playerId: string) {
+  switch (playerId) {
+    case PLAYERS_ID.PLAYER_1:
+      return 'Player 1';
+    case PLAYERS_ID.PLAYER_2:
+      return 'Player 2';
+  }
+}
+
 export const GameBoard = () => {
   const [activePlayer, setActivePlayer] = useState<string>(PLAYERS_ID.PLAYER_1);
   const [board, setBoard] = useState<Board>(initialBoardData);
@@ -155,6 +164,8 @@ export const GameBoard = () => {
 
   return (
     <div>
+      <h3 className='player-name'>{`Now: ${getPlayerName(activePlayer)}`}</h3>
+
       {board.map((row, rowIndex) => (
         <div key={rowIndex} className='row'>
           {row.map((col, colIndex) => (
