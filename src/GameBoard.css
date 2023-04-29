@@ -2,6 +2,7 @@
   --dot-size: 20px;
   --dot-color: #bbb;
   --line-size: calc(var(--dot-size) * 4);
+  --cell-size: calc(var(--line-size) + var(--dot-size) * 2);
 }
 
 .dot {
@@ -17,15 +18,15 @@
 
 .cell {
   position: relative;
-  width: calc(var(--dot-size) * 6);
-  height: calc(var(--dot-size) * 6);
+  width: var(--cell-size);
+  height: var(--cell-size);
 }
 
 .cell.completed::after {
   content: '';
   position: absolute;
-  height: calc(var(--dot-size) * 4);
-  width: calc(var(--dot-size) * 4);
+  height: var(--line-size);
+  width: var(--line-size);
   display: inline-block;
   top: var(--dot-size);
   left: var(--dot-size);
