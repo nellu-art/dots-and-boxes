@@ -155,11 +155,11 @@ export const GameBoard = () => {
       isCellCompleted(cellNeighbors.left)
     ) {
       cellNeighbors.left.completedBy = activePlayer;
+    } else {
+      setActivePlayer((prevState) =>
+        prevState === PLAYERS_ID.PLAYER_1 ? PLAYERS_ID.PLAYER_2 : PLAYERS_ID.PLAYER_1
+      );
     }
-
-    setActivePlayer((prevState) =>
-      prevState === PLAYERS_ID.PLAYER_1 ? PLAYERS_ID.PLAYER_2 : PLAYERS_ID.PLAYER_1
-    );
 
     setBoard(newState);
   };
