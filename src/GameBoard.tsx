@@ -114,6 +114,28 @@ const useGameBoardStyles = createUseStyles({
   },
 });
 
+function getWinner({
+  playersScore,
+  boardSize,
+}: {
+  playersScore: { [key: PlayerId]: number };
+  boardSize: number;
+}): PlayerId | 'draw' | null {
+  const totalCells = boardSize * boardSize;
+
+  if (playersScore[PLAYERS_ID.PLAYER_1] + playersScore[PLAYERS_ID.PLAYER_2] === totalCells) {
+    if (playersScore[PLAYERS_ID.PLAYER_1] > playersScore[PLAYERS_ID.PLAYER_2]) {
+      return PLAYERS_ID.PLAYER_1;
+    } else if (playersScore[PLAYERS_ID.PLAYER_1] < playersScore[PLAYERS_ID.PLAYER_2]) {
+      return PLAYERS_ID.PLAYER_2;
+    } else {
+      return 'draw' as const;
+    }
+  }
+
+  return null;
+}
+
 export const GameBoard = () => {
   const classes = useGameBoardStyles();
   const [activePlayer, setActivePlayer] = useState<PlayerId>(PLAYERS_ID.PLAYER_1);
@@ -122,6 +144,8 @@ export const GameBoard = () => {
     [PLAYERS_ID.PLAYER_1]: 0,
     [PLAYERS_ID.PLAYER_2]: 0,
   });
+
+  const winnerId = getWinner({ playersScore, boardSize });
 
   const handleClick = (params: { rowIndex: number; colIndex: number; position: Position }) => {
     const newState = [...board];
@@ -203,6 +227,10 @@ export const GameBoard = () => {
 
       <div className='game-container'>
         <div className={`score ${classes.player1BoxColor}`}>
+          <h3 className='result-label'>
+            {winnerId &&
+              (winnerId === 'draw' ? 'Draw' : winnerId === PLAYERS_ID.PLAYER_1 ? 'Win' : 'Lose')}
+          </h3>
           <p>{getPlayerName(PLAYERS_ID.PLAYER_1)}</p>
           <p className='bold'>Score: {playersScore[PLAYERS_ID.PLAYER_1]}</p>
         </div>
@@ -226,6 +254,10 @@ export const GameBoard = () => {
         </div>
 
         <div className={`score ${classes.player2BoxColor}`}>
+          <h3 className='result-label'>
+            {winnerId &&
+              (winnerId === 'draw' ? 'Draw' : winnerId === PLAYERS_ID.PLAYER_2 ? 'Win' : 'Lose')}
+          </h3>
           <p>{getPlayerName(PLAYERS_ID.PLAYER_2)}</p>
           <p className='bold'>Score: {playersScore[PLAYERS_ID.PLAYER_2]}</p>
         </div>
