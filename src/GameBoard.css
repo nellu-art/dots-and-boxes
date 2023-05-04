@@ -1,6 +1,6 @@
 :root {
   --dot-size: 20px;
-  --dot-color: #bbb;
+  --dot-color: #c0c0c0;
   --line-size: calc(var(--dot-size) * 4);
   --cell-size: calc(var(--line-size) + var(--dot-size) * 2);
 }
@@ -40,7 +40,7 @@
   position: absolute;
 }
 .line:not(.completed):hover {
-  background-color: #bbbbbb55;
+  background-color: #c0c0c055;
   cursor: pointer;
 }
 
@@ -112,4 +112,29 @@
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 3rem;
+}
+
+.game-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.score {
+  position: relative;
+}
+
+.score::after {
+  content: '';
+  position: absolute;
+  height: var(--line-size);
+  width: var(--line-size);
+  display: inline-block;
+  top: calc(var(--line-size) + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bold {
+  font-weight: bold;
 }

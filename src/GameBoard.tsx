@@ -2,7 +2,7 @@ import { createUseStyles } from 'react-jss';
 import { useState } from 'react';
 import './GameBoard.css';
 
-const boardSize = 3;
+const boardSize = 6;
 
 type PlayerId = string;
 
@@ -40,9 +40,9 @@ const PLAYERS_ID = {
 const getPlayersColor = (playerId: PlayerId) => {
   switch (playerId) {
     case PLAYERS_ID.PLAYER_1:
-      return '#f00';
+      return '#FF7F50';
     case PLAYERS_ID.PLAYER_2:
-      return '#00f';
+      return '#5D3FD3';
   }
 };
 
@@ -101,9 +101,27 @@ function getPlayerName(playerId: PlayerId) {
   }
 }
 
+const useGameBoardStyles = createUseStyles({
+  player1BoxColor: {
+    '&::after': {
+      backgroundColor: getPlayersColor(PLAYERS_ID.PLAYER_1),
+    },
+  },
+  player2BoxColor: {
+    '&::after': {
+      backgroundColor: getPlayersColor(PLAYERS_ID.PLAYER_2),
+    },
+  },
+});
+
 export const GameBoard = () => {
+  const classes = useGameBoardStyles();
   const [activePlayer, setActivePlayer] = useState<PlayerId>(PLAYERS_ID.PLAYER_1);
   const [board, setBoard] = useState<Board>(initialBoardData);
+  const [playersScore, setPlayersScore] = useState<{ [key: PlayerId]: number }>({
+    [PLAYERS_ID.PLAYER_1]: 0,
+    [PLAYERS_ID.PLAYER_2]: 0,
+  });
 
   const handleClick = (params: { rowIndex: number; colIndex: number; position: Position }) => {
     const newState = [...board];
@@ -143,18 +161,33 @@ export const GameBoard = () => {
 
     if (!cell.completedBy && isCellCompleted(cell)) {
       cell.completedBy = activePlayer;
+
+      setPlayersScore((prevState) => ({
+        ...prevState,
+        [activePlayer]: prevState[activePlayer] + 1,
+      }));
     } else if (
       cellNeighbors.top &&
       !cellNeighbors.top.completedBy &&
       isCellCompleted(cellNeighbors.top)
     ) {
       cellNeighbors.top.completedBy = activePlayer;
+
+      setPlayersScore((prevState) => ({
+        ...prevState,
+        [activePlayer]: prevState[activePlayer] + 1,
+      }));
     } else if (
       cellNeighbors.left &&
       !cellNeighbors.left.completedBy &&
       isCellCompleted(cellNeighbors.left)
     ) {
       cellNeighbors.left.completedBy = activePlayer;
+
+      setPlayersScore((prevState) => ({
+        ...prevState,
+        [activePlayer]: prevState[activePlayer] + 1,
+      }));
     } else {
       setActivePlayer((prevState) =>
         prevState === PLAYERS_ID.PLAYER_1 ? PLAYERS_ID.PLAYER_2 : PLAYERS_ID.PLAYER_1
@@ -165,25 +198,39 @@ export const GameBoard = () => {
   };
 
   return (
-    <div>
+    <>
       <h3 className='player-name'>{`Now: ${getPlayerName(activePlayer)}`}</h3>
 
-      {board.map((row, rowIndex) => (
-        <div key={rowIndex} className='row'>
-          {row.map((col, colIndex) => (
-            <Cell
-              key={`${rowIndex}-${colIndex}`}
-              rowIndex={rowIndex}
-              colIndex={colIndex}
-              data={col}
-              onClick={handleClick}
-              showRight={colIndex === boardSize - 1}
-              showBottom={rowIndex === boardSize - 1}
-            />
+      <div className='game-container'>
+        <div className={`score ${classes.player1BoxColor}`}>
+          <p>{getPlayerName(PLAYERS_ID.PLAYER_1)}</p>
+          <p className='bold'>Score: {playersScore[PLAYERS_ID.PLAYER_1]}</p>
+        </div>
+
+        <div>
+          {board.map((row, rowIndex) => (
+            <div key={rowIndex} className='row'>
+              {row.map((col, colIndex) => (
+                <Cell
+                  key={`${rowIndex}-${colIndex}`}
+                  rowIndex={rowIndex}
+                  colIndex={colIndex}
+                  data={col}
+                  onClick={handleClick}
+                  showRight={colIndex === boardSize - 1}
+                  showBottom={rowIndex === boardSize - 1}
+                />
+              ))}
+            </div>
           ))}
         </div>
-      ))}
-    </div>
+
+        <div className={`score ${classes.player2BoxColor}`}>
+          <p>{getPlayerName(PLAYERS_ID.PLAYER_2)}</p>
+          <p className='bold'>Score: {playersScore[PLAYERS_ID.PLAYER_2]}</p>
+        </div>
+      </div>
+    </>
   );
 };
 
