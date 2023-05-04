@@ -183,6 +183,8 @@ export const GameBoard = () => {
         break;
     }
 
+    let hasCompletedCell = false;
+
     if (!cell.completedBy && isCellCompleted(cell)) {
       cell.completedBy = activePlayer;
 
@@ -190,18 +192,22 @@ export const GameBoard = () => {
         ...prevState,
         [activePlayer]: prevState[activePlayer] + 1,
       }));
-    } else if (
-      cellNeighbors.top &&
-      !cellNeighbors.top.completedBy &&
-      isCellCompleted(cellNeighbors.top)
-    ) {
+
+      hasCompletedCell = true;
+    }
+
+    if (cellNeighbors.top && !cellNeighbors.top.completedBy && isCellCompleted(cellNeighbors.top)) {
       cellNeighbors.top.completedBy = activePlayer;
 
       setPlayersScore((prevState) => ({
         ...prevState,
         [activePlayer]: prevState[activePlayer] + 1,
       }));
-    } else if (
+
+      hasCompletedCell = true;
+    }
+
+    if (
       cellNeighbors.left &&
       !cellNeighbors.left.completedBy &&
       isCellCompleted(cellNeighbors.left)
@@ -212,7 +218,11 @@ export const GameBoard = () => {
         ...prevState,
         [activePlayer]: prevState[activePlayer] + 1,
       }));
-    } else {
+
+      hasCompletedCell = true;
+    }
+
+    if (!hasCompletedCell) {
       setActivePlayer((prevState) =>
         prevState === PLAYERS_ID.PLAYER_1 ? PLAYERS_ID.PLAYER_2 : PLAYERS_ID.PLAYER_1
       );
